@@ -16,7 +16,7 @@ namespace flywheel{
 
     int voltageUpdate() {
         if (targetSpeed == 0)  {motor.moveVoltage(0); return 0; }
-        actualSpeed = motor.getActualVelocity();
+        actualSpeed = flywheelread.filter(motor.getActualVelocity());
         int currentVoltage = actualSpeed * (MAXIMUM_VOLTAGE/TECHNICAL_FLYWHEEL_RPM);
         int convertedTarget = targetSpeed * (MAXIMUM_VOLTAGE/TECHNICAL_FLYWHEEL_RPM);
         int error = (convertedTarget - currentVoltage) * 0.5;
