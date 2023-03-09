@@ -24,7 +24,7 @@ extern IMU imu;
 
 // PNEUMATICS
 extern Pneumatics expansion;
-extern Pneumatics expansion_blocker;
+extern Pneumatics expansionBlocker;
 
 // MOTION PROFILE CONSTANTS
 extern ProfileConstraint moveLimit;

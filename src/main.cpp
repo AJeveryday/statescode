@@ -4,6 +4,14 @@ void disabled() {}
 
 void competition_initialize() {}
 
+
+
+
+
+
+
+
+
 void initialize() {
 	// LCD initialization
 	pros::lcd::initialize();
@@ -27,6 +35,19 @@ void initialize() {
     selector.addRoute(rightauton, "right auton");
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 void autonomous() {
     // Initialization
     leftDrive.setBrakeMode(AbstractMotor::brakeMode::brake);
@@ -36,10 +57,28 @@ void autonomous() {
     // Execute auton
     AutonSelector::getInstance().execute();    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void endgametask(){
     pros::delay(12000000000000);
     master.rumble("-");
 }
+
+
+
+
 
 void opcontrol(){
 	// Sets brake mode
@@ -64,11 +103,16 @@ void opcontrol(){
 	while(true){
         
         // Chassis control using curvature drives
+        /*
 		model->curvature(master.getAnalog(ControllerAnalog::leftY), 
 						 master.getAnalog(ControllerAnalog::rightX), 
 						 0.05);
+        */
+       flywheel::voltageUpdate();
 
-
+        model->tank(master.getAnalog(ControllerAnalog::leftY), 
+						 master.getAnalog(ControllerAnalog::rightX), 
+						 0.05);
         time += 1;
         /**
          * @brief Controls Intake and Outtake
@@ -102,19 +146,19 @@ void opcontrol(){
 
         if(master[ControllerDigital::L1].changedToPressed()){
             flywheel::setTargetSpeed(LONG_RANGE_POWER);
-            flywheel::voltageUpdate();
+            
         }
 
         
         if(master[ControllerDigital::L2].changedToPressed()){
             flywheel::setTargetSpeed(SHORT_RANGE_POWER);
-            flywheel::voltageUpdate();
+            
         }
 
         if(time >= 12000000000000){
             if(master[ControllerDigital::down].changedToPressed()){
                 expansion.toggle();
-                expansion_blocker.toggle();
+                expansionBlocker.toggle();
         }
 		pros::delay(10);
 	}
