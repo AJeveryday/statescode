@@ -6,12 +6,12 @@ Controller master(ControllerId::master);
 
 
 // MOTORS
-Motor leftFront(3, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
-Motor leftMiddle(3, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
-Motor leftBack(2, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
-Motor rightFront(17, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
-Motor rightMiddle(17, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
-Motor rightBack(20, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees); 
+Motor leftFront(18, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
+Motor leftMiddle(9, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
+Motor leftBack(11, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
+Motor rightFront(14, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
+Motor rightMiddle(13, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
+Motor rightBack(3, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees); 
 
 Motor intake(12, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 
