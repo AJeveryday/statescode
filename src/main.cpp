@@ -118,7 +118,7 @@ void opcontrol(){
          * @brief Controls Intake and Outtake
          *        When R1 is pressed Intake, When R2 is pressed Outtake
          */
-		if(master[ControllerDigital::R1].changedToPressed()){
+		if(master[ControllerDigital::R1].changed()){
             if(setIntake == false){
                 intake.moveVoltage(12000);
                 setIntake = true;
@@ -144,13 +144,13 @@ void opcontrol(){
          *        When L1 is pressed{flywheel runs at max speed}, When L2 is pressed{flywheel runs at moderate speed}
          */
 
-        if(master[ControllerDigital::L1].changedToPressed()){
+        if(master[ControllerDigital::L1].changed()){
             flywheel::setTargetSpeed(LONG_RANGE_POWER);
             
         }
 
         
-        if(master[ControllerDigital::L2].changedToPressed()){
+        if(master[ControllerDigital::L2].changed()){
             flywheel::setTargetSpeed(SHORT_RANGE_POWER);
             
         }
@@ -161,6 +161,8 @@ void opcontrol(){
                 expansionBlocker.toggle();
         }
 		pros::delay(10);
+
+        
 	}
 }
 }
