@@ -1,4 +1,19 @@
 #include "main.h"
+#include "globals.cpp"
+
+using namespace ryan;
+
+
+
+
+/******************************************************************************/
+/**                              Welcome to 5327X                            **/
+/**                                                                          **/
+/**                                    Wauw   								 **/
+/******************************************************************************/
+
+
+
 
 void disabled() {}
 
@@ -13,26 +28,23 @@ void competition_initialize() {}
 
 
 void initialize() {
-	// LCD initialization
-	pros::lcd::initialize();
 
+    /**
+         * @brief Chassis Initialization
+         *        
+         */
 
-
-	// IMU Initialization
-	pros::lcd::set_text(2, "imu calibrating..............");
-    std::cout << "imu calibrating.............." << std::endl;
-	imu.calibrate();
-    pros::delay(2000);
-	pros::lcd::set_text(2, "imu calibrated");
-    std::cout << "imu calibrated, initialization finished!!!\n" << std::endl;
-
-
-    
-
-    // Auton Initialization
-    auto&& selector = AutonSelector::getInstance();
-    selector.addRoute(AWP, "AWP");
-    selector.addRoute(rightauton, "right auton");
+    ez::as::initialize();
+	ez::as::auton_selector.add_autons(
+    {
+      Auton("left autonomous", leftauton),
+	  Auton("right autonomous", rightauton),
+	  Auton("solo_awp", AWP),
+    });
+    robotchassis.imu_calibrate();
+    default_constants(); 
+    exit_condition_defaults(); 
+    robotchassis.set_active_brake(0.2); // Sets the active brake kP. We recommend 0.1.
 }
 
 
@@ -49,13 +61,11 @@ void initialize() {
 
 
 void autonomous() {
-    // Initialization
-    leftDrive.setBrakeMode(AbstractMotor::brakeMode::brake);
-    rightDrive.setBrakeMode(AbstractMotor::brakeMode::brake);
-    
+    pros::Task flywheelread(flywheel::voltageUpdate);
+    pros::delay(20);
 
     // Execute auton
-    AutonSelector::getInstance().execute();    
+    ez::as::auton_selector.call_selected_auton();
 }
 
 
@@ -73,7 +83,7 @@ void autonomous() {
 
 void endgametask(){
     pros::delay(12000000000000);
-    master.rumble("-");
+    
 }
 
 
@@ -84,85 +94,86 @@ void opcontrol(){
 	// Sets brake mode
 	leftDrive.setBrakeMode(AbstractMotor::brakeMode::coast);
 	rightDrive.setBrakeMode(AbstractMotor::brakeMode::coast);
-    //endgame task
-    pros::Task endgame();
 
 	// Initializes subsystems
 	auto model = std::static_pointer_cast<ExpandedSkidSteerModel>(chassis->getModel());
 
 	// Initializes constants
 
-
-	// Initializes brasin background
-	createBlankBackground();
-	//auto gif = std::make_unique<Gif>("/usd/gif/crab-rave.gif", lv_scr_act());
-    bool setIntake = false;
-    bool setOuttake = false;
+    int intake01_mode = 0;
+	flywheel::setTargetSpeed(0);
+	int intake02_mode = 0;
 
     int time = 0;
+
+    //flywheel voltage update task
+    pros::Task flywheelread(flywheel::voltageUpdate);
+    pros::delay(20);
+
+
 	while(true){
         
-        // Chassis control using curvature drives
-        /*
-		model->curvature(master.getAnalog(ControllerAnalog::leftY), 
-						 master.getAnalog(ControllerAnalog::rightX), 
+
+        model->tank(mastershi.getAnalog(ControllerAnalog::leftY), 
+						mastershi.getAnalog(ControllerAnalog::rightX), 
 						 0.05);
-        */
-       flywheel::voltageUpdate();
-
-        model->tank(master.getAnalog(ControllerAnalog::leftY), 
-						 master.getAnalog(ControllerAnalog::rightX), 
-						 0.05);
-        time += 1;
-        /**
-         * @brief Controls Intake and Outtake
-         *        When R1 is pressed Intake, When R2 is pressed Outtake
-         */
-		if(master[ControllerDigital::R1].changed()){
-            if(setIntake == false){
-                intake.moveVoltage(12000);
-                setIntake = true;
-            }
-            else{
-                intake.moveVoltage(0);
-            }
-        }
-
-        
-        if(master[ControllerDigital::R2].changedToPressed()){
-            if(setOuttake == false){
-                intake.moveVoltage(-12000);
-                setOuttake = true;
-            }
-            else{
-                intake.moveVoltage(0);
-            }
-        }
-
+    
         /**
          * @brief Controls Flywheel speeds
-         *        When L1 is pressed{flywheel runs at max speed}, When L2 is pressed{flywheel runs at moderate speed}
+         *        
+         */
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
+            flywheel::setTargetSpeed(1);
+        }
+        if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+            flywheel::setTargetSpeed(0.6);
+        }
+        
+        /**
+         * @brief Controls Intake
+         *        
          */
 
-        if(master[ControllerDigital::L1].changed()){
-            flywheel::setTargetSpeed(LONG_RANGE_POWER);
-            
+        if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
+		{ // When R1 pressed,
+			if (intake01_mode != 1)
+			{								 			// If intake not running,
+				intake.moveVoltage(12000); 			// Run intake
+				intake01_mode = 1;
+			}
+			else {										// If intake already running,
+				intake.moveVoltage(0); 				// Turn off intake motor
+				intake01_mode = 0;
+			}
+		}
+
+		// Outtake
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2))
+		{ // When R1 pressed,
+			if (intake02_mode != 1)
+			{								 			// If intake not running,
+				intake.moveVoltage(-12000); 			// Run intake
+				intake02_mode = 1;
+			}
+			else {										// If intake already running,
+				intake.moveVoltage(0); 				// Turn off intake motor
+				intake02_mode = 0;
+			}
+		}
+
+        /**
+         * @brief Endgame
+         *        
+         */
+        if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
+            expansion1.toggle();
         }
 
-        
-        if(master[ControllerDigital::L2].changed()){
-            flywheel::setTargetSpeed(SHORT_RANGE_POWER);
-            
-        }
-
-        if(time >= 12000000000000){
-            if(master[ControllerDigital::down].changedToPressed()){
-                expansion.toggle();
-                expansionBlocker.toggle();
+        if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
+            expansion2.toggle();
         }
 		pros::delay(10);
 
         
 	}
-}
 }

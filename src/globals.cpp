@@ -1,15 +1,17 @@
 #include "globals.hpp"
+#include "main.h"
+#include "EZ-Template/api.hpp"
 using namespace ryan;
 
 // CONTROLLERS
-Controller master(ControllerId::master);
-
+Controller mastershi(ControllerId::master);
+pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 // MOTORS
 Motor leftFront(18, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
 Motor leftMiddle(9, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
 Motor leftBack(11, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
-Motor rightFront(14, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
+Motor rightFront(16, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
 Motor rightMiddle(13, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
 Motor rightBack(3, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees); 
 
@@ -23,8 +25,8 @@ MotorGroup rightDrive({rightFront, rightMiddle, rightBack});
 IMU imu(21);
 
 // PNEUMATICS
-Pneumatics expansion('A'); 
-Pneumatics expansionBlocker('B'); 
+Pneumatics expansion1('A'); 
+Pneumatics expansion2('B'); 
 
 
 // MOTION PROFILE CONSTANTS
@@ -46,19 +48,56 @@ std::shared_ptr<AsyncMotionProfiler> profiler = AsyncMotionProfilerBuilder()
 
 
 
+
 std::shared_ptr<IterativePosPIDController> turnPID = std::make_shared<IterativePosPIDController>(0.037, 0.0, 0.00065, 0, TimeUtilFactory::withSettledUtilParams(2, 2, 100_ms));
 
-void createBlankBackground(){
-    lv_obj_t *background;
-    lv_style_t backgroundStyle;
-    lv_style_copy(&backgroundStyle, &lv_style_plain);
-    backgroundStyle.body.main_color = LV_COLOR_BLACK;
-    backgroundStyle.body.grad_color = LV_COLOR_BLACK;
-    backgroundStyle.body.radius = 0;
-    backgroundStyle.text.color = LV_COLOR_WHITE;
-    background = lv_obj_create(lv_scr_act(), NULL);
-    lv_obj_set_free_num(background, 0);
-    lv_obj_set_style(background, &backgroundStyle);
-    lv_obj_set_size(background, LVGL_SCREEN_WIDTH, LVGL_SCREEN_HEIGHT);
-    lv_obj_align(background, NULL, LV_ALIGN_CENTER, 0, 0);
+
+
+extern Drive robotchassis{
+    // Left Chassis Ports (negative port will reverse it!)
+  {-11,-9,-18},
+
+  // Right Chassis Ports (negative port will reverse it!)
+  {1, 13, 16}
+
+  // IMU Port
+  ,21
+
+  // Tracking Wheel Diameter (Remember, 4" wheels are actually 4.125!)
+  ,4.125
+
+  // Ticks per Rotation of Encoder
+  ,600
+
+  // External Gear Ratio of Tracking Wheel (MUST BE DECIMAL)
+  // eg. if your drive is 84:36 where the 36t is sensored, your RATIO would be 2.333.
+  // eg. if your drive is 36:60 where the 60t is sensored, your RATIO would be 0.6.
+  ,2.333
+};
+
+
+
+void default_constants()
+{
+  robotchassis.set_slew_min_power(80, 80);
+  robotchassis.set_slew_distance(7, 7);
+  robotchassis.set_pid_constants(&robotchassis.headingPID, 11, 0, 20, 0);
+  robotchassis.set_pid_constants(&robotchassis.forward_drivePID, 0.45, 0, 5, 0);
+  robotchassis.set_pid_constants(&robotchassis.backward_drivePID, 0.45, 0, 5, 0);
+  robotchassis.set_pid_constants(&robotchassis.turnPID, 5, 0.003, 35, 15);
+  robotchassis.set_pid_constants(&robotchassis.swingPID, 7, 0, 45, 0);
+}
+
+void exit_condition_defaults()
+{
+  robotchassis.set_exit_condition(robotchassis.turn_exit, 100, 3, 500, 7, 500, 500);
+  robotchassis.set_exit_condition(robotchassis.swing_exit, 100, 3, 500, 7, 500, 500);
+  robotchassis.set_exit_condition(robotchassis.drive_exit, 80, 50, 300, 150, 500, 200);
+}
+
+void modified_exit_condition()
+{
+  robotchassis.set_exit_condition(robotchassis.turn_exit, 100, 3, 500, 7, 500, 500);
+  robotchassis.set_exit_condition(robotchassis.swing_exit, 100, 3, 500, 7, 500, 500);
+  robotchassis.set_exit_condition(robotchassis.drive_exit, 80, 50, 300, 150, 500, 500);
 }

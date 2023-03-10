@@ -1,5 +1,7 @@
 #pragma once
 #include "main.h"
+#include "EZ-Template/api.hpp"
+
 
 #define LVGL_SCREEN_WIDTH 480
 #define LVGL_SCREEN_HEIGHT 240
@@ -10,8 +12,8 @@ const double DEADBAND = 0.0500;
 
 
 // CONTROLLER
-extern Controller master;
-
+extern Controller mastershi;
+extern pros::Controller master;
 
 // MOTORS
 extern MotorGroup leftDrive;
@@ -23,8 +25,8 @@ extern IMU imu;
 
 
 // PNEUMATICS
-extern Pneumatics expansion;
-extern Pneumatics expansionBlocker;
+extern Pneumatics expansion1;
+extern Pneumatics expansion2;
 
 // MOTION PROFILE CONSTANTS
 extern ProfileConstraint moveLimit;
@@ -42,4 +44,8 @@ extern std::shared_ptr<IterativePosPIDController> turnPID;
  * @brief Create a Blank Background using LVGL
  * 
  */
-void createBlankBackground();
+
+
+extern Drive robotchassis;
+extern void default_constants();
+extern void exit_condition_defaults();

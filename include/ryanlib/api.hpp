@@ -13,4 +13,3 @@ using namespace ryan;
 #include "ryanlib/LinearMotionProfile.hpp"
 #include "ryanlib/AsyncProfiler.hpp"
 #include "ryanlib/ExpandedSkidSteerModel.hpp"
-#include "ryanlib/AutonSelector.hpp"
