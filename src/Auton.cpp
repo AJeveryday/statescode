@@ -1,6 +1,6 @@
-#include "Auton.hpp"
+
 #include "main.h"
-#include "globals.cpp"
+
 
 void shootdisks(int disks){
     for(int i; i< disks+1 ; i++){

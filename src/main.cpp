@@ -1,5 +1,5 @@
 #include "main.h"
-#include "globals.cpp"
+
 
 using namespace ryan;
 
