@@ -45,6 +45,14 @@ void rollers(){
     pros::delay(150);
     intake.moveVoltage(0);
 }
+
+void delay(int time){
+    pros::delay(time * 1000);
+}
+
+
+
+
 void AWP(){
     rollers();
     flywheel::setTargetSpeed(1);
@@ -78,7 +86,7 @@ void rightauton(){
     move_intake(true);//starts intake
 
     fwd(25); //go forward
-    pros::delay(10); //pick up disk
+    delay(0.01); //pick up disk
     turn(30);//turn right
     stop_intake();//stop the intake
     shootdisks(3);//shoot disks
@@ -87,7 +95,7 @@ void rightauton(){
     move_intake(true);
     fwd(5);
     //delay for half a second to grab disk
-    pros::delay(100);
+    delay(0.1);
     //---
     fwd(-5); // go back 
     turn(-130); //turn left to intake disks
@@ -96,7 +104,7 @@ void rightauton(){
     shootdisks(3); //shoot disks
     turn(-180); //turn facing rollers
     fwd(-80); // go backwards 
-    rollers();
+    rollers(); //hit rollers
 
     //exit
     leftDrive.moveVoltage(0); rightDrive.moveVoltage(0);

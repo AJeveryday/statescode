@@ -82,13 +82,29 @@ void autonomous() {
 
 
 
-void endgametask(){
-    pros::delay(12000000000000);
-    
+
+
+
+void driverflywheel(){
+    if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
+            flywheel::setTargetSpeed(1);
+        }
+        if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+            flywheel::setTargetSpeed(0.6);
+        }
 }
 
 
+void endgame(){
+    pros::delay(60*1000);
+    if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
+            expansion1.toggle();
+        }
 
+        if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
+            expansion2.toggle();
+        }
+}
 
 
 void opcontrol(){
@@ -105,7 +121,7 @@ void opcontrol(){
 	flywheel::setTargetSpeed(0);
 	int intake02_mode = 0;
 
-
+    pros::Task endgametask(endgame);
 
     
     pros::delay(20);
@@ -114,7 +130,7 @@ void opcontrol(){
 	while(true){
         
 
-        model->tank(mastershi.getAnalog(ControllerAnalog::leftY), 
+        model->curvature(mastershi.getAnalog(ControllerAnalog::leftY), 
 						mastershi.getAnalog(ControllerAnalog::rightX), 
 						 0.05);
     
@@ -122,12 +138,7 @@ void opcontrol(){
          * @brief Controls Flywheel speeds
          *        
          */
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
-            flywheel::setTargetSpeed(1);
-        }
-        if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
-            flywheel::setTargetSpeed(0.6);
-        }
+		driverflywheel();
         
         /**
          * @brief Controls Intake
@@ -165,13 +176,9 @@ void opcontrol(){
          * @brief Endgame
          *        
          */
-        if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
-            expansion1.toggle();
-        }
+            //runs endgame task(wait for 60 seconds before activating buttons for expansion)
 
-        if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
-            expansion2.toggle();
-        }
+
 		pros::delay(10);
 
         
