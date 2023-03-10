@@ -15,6 +15,7 @@ namespace flywheel{
     double actualSpeed = 0;
 
     int voltageUpdate() {
+
         while(true){
             if (targetSpeed == 0)  {motor.moveVoltage(0); return 0; }
             actualSpeed = motor.getActualVelocity();
@@ -25,6 +26,7 @@ namespace flywheel{
             motor.moveVoltage(finalVoltage);
         }
         
+
     };
 
     void setTargetSpeed(double pwr) {
