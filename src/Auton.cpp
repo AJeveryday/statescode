@@ -46,6 +46,30 @@ void rollers(){
     intake.moveVoltage(0);
 }
 void AWP(){
+    rollers();
+    flywheel::setTargetSpeed(1);
+    fwd(10);
+    shootdisks(3);
+    fwd(-3);
+    turn(45);
+    move_intake(true);
+    //first part
+    fwd(24);
+    pros::delay(10);
+    fwd(10);
+    turn(-80);
+    shootdisks(3);
+    turn(80);
+    //second part
+    slowfwd(60);
+    turn(-80);
+    shootdisks(3);
+    turn(-100);
+    //turn to rollers and hit rollers
+    fwd(-19);
+    turn(45);
+    fwd(-5);
+    rollers();
     
 }
 
@@ -87,8 +111,18 @@ void rightauton(){
 
 void leftauton(){
     
-    profiler->setTarget(-2.5_ft, true);
-    turnToAngle(90_deg);
-    
-    leftDrive.moveVoltage(0); rightDrive.moveVoltage(0);
+    rollers();
+    flywheel::setTargetSpeed(1);
+    fwd(10);
+    shootdisks(3);
+    fwd(-3);
+    turn(45);
+    move_intake(true);
+    //first part
+    fwd(24);
+    pros::delay(10);
+    fwd(10);
+    turn(-80);
+    shootdisks(3);
+    turn(80);
 }
