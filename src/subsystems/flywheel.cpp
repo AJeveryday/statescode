@@ -24,6 +24,7 @@ namespace flywheel{
             int error = (convertedTarget - currentVoltage) * 0.5;
             int finalVoltage = convertedTarget + error;
             motor.moveVoltage(finalVoltage);
+            pros::delay(10);
         }
         
 

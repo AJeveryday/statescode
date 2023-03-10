@@ -45,6 +45,9 @@ void initialize() {
     default_constants(); 
     exit_condition_defaults(); 
     robotchassis.set_active_brake(0.2); // Sets the active brake kP. We recommend 0.1.
+
+    //flywheel task 
+    pros::Task flywheelread(flywheel::voltageUpdate);
 }
 
 
@@ -61,8 +64,6 @@ void initialize() {
 
 
 void autonomous() {
-    pros::Task flywheelread(flywheel::voltageUpdate);
-    pros::delay(20);
 
     // Execute auton
     ez::as::auton_selector.call_selected_auton();
@@ -104,10 +105,9 @@ void opcontrol(){
 	flywheel::setTargetSpeed(0);
 	int intake02_mode = 0;
 
-    int time = 0;
 
-    //flywheel voltage update task
-    pros::Task flywheelread(flywheel::voltageUpdate);
+
+    
     pros::delay(20);
 
 

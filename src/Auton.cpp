@@ -50,8 +50,9 @@ void AWP(){
 }
 
 void rightauton(){
-    flywheel::setTargetSpeed(1);
-    move_intake(true);
+    flywheel::setTargetSpeed(1); //starts flywheel
+    move_intake(true);//starts intake
+
     fwd(25); //go forward
     pros::delay(10); //pick up disk
     turn(30);//turn right
@@ -65,7 +66,7 @@ void rightauton(){
     pros::delay(100);
     //---
     fwd(-5); // go back 
-    turn(-40); //turn left to intake disks
+    turn(-130); //turn left to intake disks
     slowfwd(60); //slowly go forward
     turn(80); //turn towards goal
     shootdisks(3); //shoot disks
@@ -73,7 +74,8 @@ void rightauton(){
     fwd(-80); // go backwards 
     rollers();
 
-
+    //exit
+    leftDrive.moveVoltage(0); rightDrive.moveVoltage(0);
 
 
 
