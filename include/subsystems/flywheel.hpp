@@ -1,7 +1,7 @@
 #include "main.h"
 
 namespace flywheel {
-    #define FLYWHEELPORT 19
+    #define FLYWHEELPORT 5
     #define LONG_RANGE_POWER 0.8888888
     #define SHORT_RANGE_POWER 0.6666999
     #define MAXIMUM_VOLTAGE 12000
@@ -12,7 +12,7 @@ namespace flywheel {
     extern int targetSpeed;
     extern double actualSpeed;
 
-    int voltageUpdate();
+    void voltageUpdate();
     void setTargetSpeed(double pwr);
     void brake(bool mode);
 

@@ -15,9 +15,18 @@ using namespace ryan;
 
 
 
-void disabled() {}
+void disabled() {
+    ez::as::auton_selector.add_autons(
+    {
+      Auton("left autonomous", leftauton),
+	  Auton("right autonomous", rightauton),
+	  Auton("solo_awp", AWP),
+    });
+}
 
-void competition_initialize() {}
+void competition_initialize() {
+    //ez::as::auton_selector.call_selected_auton();
+}
 
 
 
@@ -33,7 +42,9 @@ void initialize() {
          * @brief Chassis Initialization
          *        
          */
-
+    chassis.toggle_modify_curve_with_controller(true); // Enables modifying the controller curve with buttons on the joysticks
+	chassis.set_active_brake(0.2);					   // Sets the active brake kP. We recommend 0.1.
+	chassis.set_curve_default(0, 0);	
     ez::as::initialize();
 	ez::as::auton_selector.add_autons(
     {
@@ -41,13 +52,12 @@ void initialize() {
 	  Auton("right autonomous", rightauton),
 	  Auton("solo_awp", AWP),
     });
-    robotchassis.imu_calibrate();
+    chassis.imu_calibrate();
     default_constants(); 
     exit_condition_defaults(); 
-    robotchassis.set_active_brake(0.2); // Sets the active brake kP. We recommend 0.1.
+    chassis.set_active_brake(0.2); // Sets the active brake kP. We recommend 0.1.
+    
 
-    //flywheel task 
-    pros::Task flywheelread(flywheel::voltageUpdate);
 }
 
 
@@ -64,9 +74,13 @@ void initialize() {
 
 
 void autonomous() {
-
+    chassis.reset_gyro();
+  	chassis.reset_drive_sensor();
+  	leftDrive.setBrakeMode(MotorGroup::brakeMode::hold);
+    rightDrive.setBrakeMode(MotorGroup::brakeMode::hold);
     // Execute auton
-    ez::as::auton_selector.call_selected_auton();
+    //ez::as::auton_selector.call_selected_auton();
+    set_pid();
 }
 
 
@@ -109,11 +123,9 @@ void endgame(){
 
 void opcontrol(){
 	// Sets brake mode
-	leftDrive.setBrakeMode(AbstractMotor::brakeMode::coast);
-	rightDrive.setBrakeMode(AbstractMotor::brakeMode::coast);
 
 	// Initializes subsystems
-	auto model = std::static_pointer_cast<ExpandedSkidSteerModel>(chassis->getModel());
+
 
 	// Initializes constants
 
@@ -121,24 +133,31 @@ void opcontrol(){
 	flywheel::setTargetSpeed(0);
 	int intake02_mode = 0;
 
-    pros::Task endgametask(endgame);
-
     
-    pros::delay(20);
 
+    leftDrive.setBrakeMode(MotorGroup::brakeMode::hold);
+    rightDrive.setBrakeMode(MotorGroup::brakeMode::hold);
+    pros::delay(20);
+    
 
 	while(true){
         
 
-        model->curvature(mastershi.getAnalog(ControllerAnalog::leftY), 
-						mastershi.getAnalog(ControllerAnalog::rightX), 
-						 0.05);
+        chassis.tank();
     
         /**
          * @brief Controls Flywheel speeds
          *        
          */
-		driverflywheel();
+
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
+            flywheel::setTargetSpeed(1);
+            
+            
+        }
+        if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+            flywheel::setTargetSpeed(0.6);
+        }
         
         /**
          * @brief Controls Intake
@@ -161,6 +180,7 @@ void opcontrol(){
 		// Outtake
 		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2))
 		{ // When R1 pressed,
+			//if (intake02_mode != 1)
 			if (intake02_mode != 1)
 			{								 			// If intake not running,
 				intake.moveVoltage(-12000); 			// Run intake

@@ -1,30 +1,43 @@
 
 #include "main.h"
+//pros::Motor flyw(5);
+int None = 0;
 
-
+int DRIVE_SPEED = 110;
+int TURN_SPEED = 90;
 void shootdisks(int disks){
-    for(int i; i< disks+1 ; i++){
-        intake.moveVoltage(-12000);
-        pros::delay(150);
+    
+    intake.moveVoltage(-12000);
+        pros::delay(200);
+    //intake.moveVoltage(12000);
+        //pros::delay(200);
         intake.moveVoltage(0);
-    }
-    //delay for 10 mills for shooting---
-    pros::delay(10);
+    pros::delay(1000);
+
+    intake.moveVoltage(-12000);
+        pros::delay(200);
+        intake.moveVoltage(0);
+    //intake.moveVoltage(12000);
+    pros::delay(1000);
+    intake.moveVoltage(-12000);
+        pros::delay(300);
+        intake.moveVoltage(0);
+    
 }
 
 void fwd(double distance){
-    robotchassis.set_drive_pid(distance, 110, false, true);
-    robotchassis.wait_drive();
+    chassis.set_drive_pid(distance, 110, false, true);
+    chassis.wait_drive();
     
 }
 void slowfwd(double distance){
-    robotchassis.set_drive_pid(distance, 80, false, true);
-    robotchassis.wait_drive();
+    chassis.set_drive_pid(distance, 25, false, true);
+    chassis.wait_drive();
 }
 
 void turn(double angle){
-    robotchassis.set_turn_pid(angle, 90);
-    robotchassis.wait_drive();
+    chassis.set_turn_pid(angle, 90);
+    chassis.wait_drive();
 }
 
 void move_intake(bool mode){
@@ -41,43 +54,90 @@ void stop_intake(){
 }
 
 void rollers(){
-    intake.moveVoltage(-12000);
-    pros::delay(150);
-    intake.moveVoltage(0);
+    intake.moveVoltage(12000);
+    
 }
 
 void delay(int time){
     pros::delay(time * 1000);
 }
 
-
-
-
-void AWP(){
-    rollers();
-    flywheel::setTargetSpeed(1);
-    fwd(10);
-    shootdisks(3);
-    fwd(-3);
-    turn(45);
-    move_intake(true);
-    //first part
-    fwd(24);
+void run_flywheel(){
+    while(true){
+        flywheel::motor.moveVoltage(-12000);
+        if(flywheel::motor.getActualVelocity() < 3600){
+            flywheel::motor.moveVoltage(-12000);
+        if(flywheel::motor.getActualVelocity() >= 3500){
+            
+        }
+        }
+        pros::delay(10);
+    }
     pros::delay(10);
+}
+void swingleft(int turndis){
+    chassis.set_swing_pid(ez::LEFT_SWING, turndis, 90);
+    chassis.wait_drive();
+}
+void swingright(int turndis){
+    chassis.set_swing_pid(ez::RIGHT_SWING, turndis, 90);
+    chassis.wait_drive();
+}
+
+void shootdiskauton(){
+    intake.moveVoltage(-12000);
+    pros::delay(1000);
+    intake.moveVoltage(0);
+}
+void AWP(){
+    pros::Task flywheeltask(run_flywheel);
+    
+    
+
+
+
+    fwd(-2);
+    rollers();
+
     fwd(10);
-    turn(-80);
+    turn(45);
+    //swingleft(45);
+    
+    stop_intake();
+    fwd(28);
+    intake.moveVelocity(12000);   //intake
+    slowfwd(38);
+    intake.moveVelocity(0);
+    turn(-30);
+    fwd(10);
     shootdisks(3);
-    turn(80);
+    fwd(-10);
+
+
+
+    turn(60);
+    move_intake(true);
+    
+
+
+
+    //fwd(70);
+    //turn(-133)
+    //shoot(3)
+    //fwd()
+    /*
     //second part
     slowfwd(60);
     turn(-80);
     shootdisks(3);
     turn(-100);
+
     //turn to rollers and hit rollers
     fwd(-19);
     turn(45);
     fwd(-5);
     rollers();
+    */
     
 }
 
@@ -119,18 +179,131 @@ void rightauton(){
 
 void leftauton(){
     
+    profiler->setTarget(2_ft, true);
+    
+    //fwd(70);
+    //turn(-133)
+    //shoot(3)
+    //fwd
+}
+
+void progskills(){
+    /*
+    fwd(-2);
     rollers();
-    flywheel::setTargetSpeed(1);
-    fwd(10);
-    shootdisks(3);
-    fwd(-3);
-    turn(45);
-    move_intake(true);
-    //first part
-    fwd(24);
-    pros::delay(10);
-    fwd(10);
-    turn(-80);
-    shootdisks(3);
-    turn(80);
+    fwd(5);
+    swingright(45); //edit
+    //move_intake(true);
+    fwd(20);//edit
+    turn(200);
+    fwd(-2);
+    rollers();
+    */
+   //flywheel::motor.moveVoltage(-12000);
+//chassis.set_angle(0);
+
+
+chassis.set_drive_pid(-2, DRIVE_SPEED, false, true);
+chassis.wait_drive();
+flywheel::motor.moveVoltage(-12000);
+intake.moveVoltage(12000);
+pros::delay(300);
+
+/*
+chassis.set_drive_pid(33, 127, false, true);
+chassis.wait_drive();
+intake.moveVoltage(12000);
+
+chassis.set_turn_pid(90, TURN_SPEED);
+chassis.wait_drive();
+
+chassis.set_drive_pid(-40, 127, false, true);
+chassis.wait_drive();
+
+pros::delay(200);
+*/
+chassis.set_drive_pid(5, DRIVE_SPEED, false, true);
+chassis.wait_drive();
+chassis.set_turn_pid(-45, TURN_SPEED);
+chassis.wait_drive();
+intake.moveVoltage(12000);
+chassis.set_drive_pid(35, DRIVE_SPEED, false, true);
+chassis.wait_drive();
+chassis.set_turn_pid(90, TURN_SPEED);
+chassis.wait_drive();
+chassis.set_drive_pid(-15, DRIVE_SPEED);
+chassis.wait_drive();
+intake.moveVoltage(12000);
+pros::delay(200);
+intake.moveVoltage(0);
+//chassis.set_swing_pid(ez::RIGHT_SWING, 0, 90);
+chassis.set_drive_pid(10, TURN_SPEED);
+chassis.wait_drive();
+
+chassis.set_turn_pid(0, TURN_SPEED);
+chassis.wait_drive();
+
+intake.moveVoltage(0);
+chassis.set_drive_pid(50, DRIVE_SPEED, false, true);
+chassis.wait_drive();
+chassis.set_turn_pid(8, 90);
+chassis.wait_drive();
+intake.moveVoltage(-12000);
+pros::delay(800);
+intake.moveVoltage(0);
+
+chassis.set_drive_pid(-45, 127, false, true);
+chassis.wait_drive();
+
+intake.moveVoltage(12000);
+chassis.set_turn_pid(45, 110);
+chassis.wait_drive();
+
+chassis.set_drive_pid(80, 90);
+chassis.wait_drive();
+
+pros::delay(1000);
+
+intake.moveVoltage(0);
+
+chassis.set_turn_pid(-45, 127);
+chassis.wait_drive();
+
+chassis.set_drive_pid(10, 127);
+chassis.wait_drive();
+
+intake.moveVoltage(-12000);
+pros::delay(800);
+intake.moveVoltage(0);
+
+chassis.set_turn_pid(45, 127);
+chassis.wait_drive();
+
+chassis.set_drive_pid(34, 127);
+chassis.wait_drive();
+intake.moveVoltage(12000);
+
+chassis.set_drive_pid(20, 40);
+chassis.wait_drive();
+
+chassis.set_turn_pid(-90, 90);
+chassis.wait_drive();
+
+chassis.set_drive_pid(30, 127);
+chassis.wait_drive();
+
+
+
+
+
+
+
+
+
+
+
+}
+
+void set_pid(){
+    chassis.set_drive_pid(18, 110);
 }

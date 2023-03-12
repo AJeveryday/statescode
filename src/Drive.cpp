@@ -6,9 +6,9 @@ void turnToAngle(QAngle targetAngle){
     turnPID->setTarget(0);
 
     do {
-        chassis->getModel()->tank(0, turnPID->step(-Math::rescale180(targetAngle.convert(degree)-imu.get())));
+        rchassis->getModel()->tank(0, turnPID->step(-Math::rescale180(targetAngle.convert(degree)-imu.get())));
         pros::delay(10);
     } while(!turnPID->isSettled());
 
-    (chassis->getModel())->stop();
+    (rchassis->getModel())->stop();
 }

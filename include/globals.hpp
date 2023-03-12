@@ -12,9 +12,9 @@ const double DEADBAND = 0.0500;
 
 
 // CONTROLLER
-extern Controller mastershi;
+//extern Controller mastershi;
 extern pros::Controller master;
-
+//extern pros::Motor flyw;
 // MOTORS
 extern MotorGroup leftDrive;
 extern MotorGroup rightDrive;
@@ -35,7 +35,7 @@ extern FFVelocityController leftController;
 extern FFVelocityController rightController;
 
 // SUBSYSTEM CONTROLLERS
-extern std::shared_ptr<ChassisController> chassis;
+extern std::shared_ptr<ChassisController> rchassis;
 extern std::shared_ptr<AsyncMotionProfiler> profiler;
 
 extern std::shared_ptr<IterativePosPIDController> turnPID;
@@ -46,6 +46,6 @@ extern std::shared_ptr<IterativePosPIDController> turnPID;
  */
 
 
-extern Drive robotchassis;
+extern Drive chassis;
 extern void default_constants();
 extern void exit_condition_defaults();

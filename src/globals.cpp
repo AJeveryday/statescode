@@ -4,16 +4,16 @@
 using namespace ryan;
 
 // CONTROLLERS
-Controller mastershi(ControllerId::master);
+//Controller mastershi(ControllerId::master);
 pros::Controller master(pros::E_CONTROLLER_MASTER);
-
+//pros::Motor flyw(5);
 // MOTORS
 Motor leftFront(18, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
 Motor leftMiddle(9, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
 Motor leftBack(11, true, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
 Motor rightFront(16, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
 Motor rightMiddle(13, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees);
-Motor rightBack(3, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees); 
+Motor rightBack(3, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::degrees); 
 
 Motor intake(12, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 
@@ -36,13 +36,13 @@ FFVelocityController leftController(0.187, 0.04, 0.025, 4.35, 0.1); // TODO Tune
 FFVelocityController rightController(0.1915, 0.043, 0.02, 4, 0.1); // TODO Tune for new chassis
 
 // SUBSYSTEM CONTROLLERS
-std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
+std::shared_ptr<ChassisController> rchassis = ChassisControllerBuilder()
     .withMotors(leftDrive, rightDrive)
     .withDimensions({AbstractMotor::gearset::green, 5.0/7.0}, {{3.25_in, 1.294_ft}, imev5BlueTPR})
     .build();
 
 std::shared_ptr<AsyncMotionProfiler> profiler = AsyncMotionProfilerBuilder()
-    .withOutput(chassis)
+    .withOutput(rchassis)
     .withProfiler(std::make_unique<SCurveMotionProfile>(moveLimit))
     .build();
 
@@ -53,12 +53,12 @@ std::shared_ptr<IterativePosPIDController> turnPID = std::make_shared<IterativeP
 
 
 
-extern Drive robotchassis{
+extern Drive chassis{
     // Left Chassis Ports (negative port will reverse it!)
   {-11,-9,-18},
 
   // Right Chassis Ports (negative port will reverse it!)
-  {1, 13, 16}
+  {6, 13, 16}
 
   // IMU Port
   ,21
@@ -79,25 +79,25 @@ extern Drive robotchassis{
 
 void default_constants()
 {
-  robotchassis.set_slew_min_power(80, 80);
-  robotchassis.set_slew_distance(7, 7);
-  robotchassis.set_pid_constants(&robotchassis.headingPID, 11, 0, 20, 0);
-  robotchassis.set_pid_constants(&robotchassis.forward_drivePID, 0.45, 0, 5, 0);
-  robotchassis.set_pid_constants(&robotchassis.backward_drivePID, 0.45, 0, 5, 0);
-  robotchassis.set_pid_constants(&robotchassis.turnPID, 5, 0.003, 35, 15);
-  robotchassis.set_pid_constants(&robotchassis.swingPID, 7, 0, 45, 0);
+  chassis.set_slew_min_power(80, 80);
+  chassis.set_slew_distance(7, 7);
+  chassis.set_pid_constants(&chassis.headingPID, 21, 0, 0, 0);
+  chassis.set_pid_constants(&chassis.forward_drivePID, 0.45, 0.5, 5, 0);
+  chassis.set_pid_constants(&chassis.backward_drivePID, 0.45, 0, 5, 0);
+  chassis.set_pid_constants(&chassis.turnPID, 5, 0.003, 35, 15);
+  chassis.set_pid_constants(&chassis.swingPID, 7, 0, 45, 0);
 }
 
 void exit_condition_defaults()
 {
-  robotchassis.set_exit_condition(robotchassis.turn_exit, 100, 3, 500, 7, 500, 500);
-  robotchassis.set_exit_condition(robotchassis.swing_exit, 100, 3, 500, 7, 500, 500);
-  robotchassis.set_exit_condition(robotchassis.drive_exit, 80, 50, 300, 150, 500, 200);
+  chassis.set_exit_condition(chassis.turn_exit, 100, 3, 200, 7, 500, 500);
+  chassis.set_exit_condition(chassis.swing_exit, 100, 3, 500, 7, 500, 500);
+  chassis.set_exit_condition(chassis.drive_exit, 80, 50, 150, 150, 500, 200);
 }
 
 void modified_exit_condition()
 {
-  robotchassis.set_exit_condition(robotchassis.turn_exit, 100, 3, 500, 7, 500, 500);
-  robotchassis.set_exit_condition(robotchassis.swing_exit, 100, 3, 500, 7, 500, 500);
-  robotchassis.set_exit_condition(robotchassis.drive_exit, 80, 50, 300, 150, 500, 500);
+  chassis.set_exit_condition(chassis.turn_exit, 100, 3, 500, 7, 500, 500);
+  chassis.set_exit_condition(chassis.swing_exit, 100, 3, 500, 7, 500, 500);
+  chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 500);
 }

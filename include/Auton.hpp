@@ -14,3 +14,7 @@ void AWP();
 void rightauton();
 
 void leftauton();
+
+void progskills();
+
+void set_pid();
